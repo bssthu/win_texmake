@@ -62,4 +62,5 @@ target/
 __MACOSX
 ._
 
+*.tex
 *.pdf
