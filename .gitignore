@@ -63,4 +63,16 @@ __MACOSX
 ._
 
 *.tex
+*.fmt
+*.aux
+*.log
+_*.prv
+*.out
+*.nav
+*.snm
+*.dvi
+*.toc
+*.lof
+*.idx
+*.lot
 *.pdf

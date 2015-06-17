@@ -41,28 +41,39 @@ def loadSetting(filename):
 
     return (texfile, project, working_dir, output_dir)
 
+
+def getPageAndZoom(avdoc):
+    pageview = avdoc.GetAVPageView()
+    page = pageview.GetPageNum()
+    zoom = pageview.GetZoom()
+    return (page, zoom)
+
+
 if __name__ == '__main__':
+    # init
     (texfile, project, working_dir, output_dir) = loadSetting('texmake.ini')
     pdf_src = os.path.abspath('%s%s%s.pdf' % (output_dir, os.sep, project))
     pdf_src = os.path.abspath(pdf_src)
-    print(texfile)
-    print(pdf_src)
 
     app = Dispatch('AcroExch.App')
     avdoc = Dispatch('AcroExch.AVDoc')
 
-    avdoc.Open(pdf_src, pdf_src);
-    avdoc.Close(-1);
+    # get pageview status
+    if not avdoc.Open(pdf_src, pdf_src):
+        print('cannot open pdf, bye.')
+        sys.exit(0)
+    (page, zoom) = getPageAndZoom(avdoc)
+    avdoc.Close(-1)
 
-    avdoc.Open(pdf_src, pdf_src);
-
+    # open pdf
+    if not avdoc.Open(pdf_src, pdf_src):
+        print('cannot open pdf, bye.')
+        sys.exit(0)
     app.Show();
 
     pddoc = avdoc.GetPDDoc()
-    pageNum = pddoc.GetNumPages()
-
-    page = 10
-    page = min(page, pageNum)
+    numPages = pddoc.GetNumPages()
+    page = min(page, numPages)
 
     pageview = avdoc.GetAVPageView()
     pageview.Goto(page)
