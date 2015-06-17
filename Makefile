@@ -5,14 +5,19 @@
 
 PYTHON = python
 CD = cd
+FLGS =
 
 
 .PHONY:all
 
 all:
-	$(PYTHON) texmake.py
+	$(PYTHON) texmake.py $(FLGS)
 
-.PHONY:tex
+.PHONY:output_dir_set
 
-tex:
-	$(LATEX) 
+output_dir_set:
+OUTPUT_DIR =
+ifneq "$(strip $(output_dir))" ""
+OUTPUT_DIR = --output_dir=$(output_dir)
+endif
+FLGS += $(OUTPUT_DIR)

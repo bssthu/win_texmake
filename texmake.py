@@ -9,6 +9,7 @@
 
 import sys
 import os
+import getopt
 from win32com.client.dynamic import Dispatch
 import ConfigParser
 
@@ -41,6 +42,21 @@ def loadSetting(filename):
     return (texfile, working_dir, output_dir, LATEX)
 
 
+def getOpts(argv):
+    output_dir = ''
+    try:
+        opts, argv = getopt.getopt(argv[1:], '', ['output_dir='])
+    except Exception, e:
+        print('unexcepted error when parse argv: %s' % e)
+        return output_dir
+
+    for o, a in opts:
+        if o in ('--output_dir'):
+            output_dir = a
+
+    return output_dir
+
+
 def callMake(texfile, project, working_dir, output_dir, LATEX):
     os.chdir(working_dir)
     cmd = '%s %s -output-directory=%s -halt-on-error' % (LATEX, texfile, output_dir)
@@ -60,6 +76,10 @@ def getAVStatus(avdoc):
 if __name__ == '__main__':
     # init
     (texfile, working_dir, output_dir, LATEX) = loadSetting('texmake.ini')
+    output_dir_opt = getOpts(sys.argv)
+    
+    if output_dir_opt != '':
+        output_dir = output_dir_opt
     project = texfile.split('.tex')[0]
     pdf_src = os.path.abspath('%s%s%s.pdf' % (output_dir, os.sep, project))
     pdf_src = os.path.abspath(pdf_src)
