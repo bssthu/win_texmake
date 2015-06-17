@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Platform: Windows
 # Project: texmake
-# created by bss at 2015-04-04
+# created by bss at 2015-06-17
 
 PYTHON = python
 CD = cd

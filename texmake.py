@@ -18,11 +18,9 @@ def loadSetting(filename):
     cf.read(filename)
 
     texfile = cf.get('tex', 'texfile')
-    project = cf.get('tex', 'project')
     working_dir = cf.get('tex', 'working_dir')
     output_dir = cf.get('tex', 'output_dir')
     
-    CD = cf.get('cmd', 'CD')
     LATEX = cf.get('cmd', 'LATEX')
     
     if (working_dir == None or working_dir == ''):
@@ -37,17 +35,16 @@ def loadSetting(filename):
         else:
             print('cannot decide texfile, please edit texmake.ini')
             sys.exit(-1)
-    if (project == None or project == ''):
-        project = texfile.split('.tex')[0]
     if (output_dir == None or output_dir == ''):
         output_dir = '.'
 
-    return (texfile, project, working_dir, output_dir, CD, LATEX)
+    return (texfile, working_dir, output_dir, LATEX)
 
 
-def callMake(texfile, project, working_dir, output_dir, CD, LATEX):
-    os.system('%s %s && %s %s -output-directory=%s -halt-on-error'
-            % (CD, working_dir, LATEX, texfile, output_dir))
+def callMake(texfile, project, working_dir, output_dir, LATEX):
+    os.chdir(working_dir)
+    cmd = '%s %s -output-directory=%s -halt-on-error' % (LATEX, texfile, output_dir)
+    os.system(cmd)
 
 
 def getAVStatus(avdoc):
@@ -56,12 +53,14 @@ def getAVStatus(avdoc):
     zoomtype = pageview.GetZoomType()
     zoom = pageview.GetZoom()
     frame = avdoc.GetFrame()
-    return (page, zoomtype, zoom, frame)
+    viewmode = avdoc.GetViewMode()
+    return (page, zoomtype, zoom, frame, viewmode)
 
 
 if __name__ == '__main__':
     # init
-    (texfile, project, working_dir, output_dir, CD, LATEX) = loadSetting('texmake.ini')
+    (texfile, working_dir, output_dir, LATEX) = loadSetting('texmake.ini')
+    project = texfile.split('.tex')[0]
     pdf_src = os.path.abspath('%s%s%s.pdf' % (output_dir, os.sep, project))
     pdf_src = os.path.abspath(pdf_src)
 
@@ -69,30 +68,32 @@ if __name__ == '__main__':
     avdoc = Dispatch('AcroExch.AVDoc')
 
     # get pageview status
-    if not avdoc.Open(pdf_src, pdf_src):
-        print('cannot open pdf, bye.')
-        sys.exit(0)
-    (page, zoomtype, zoom, frame) = getAVStatus(avdoc)
-    avdoc.Close(-1)
-    if app.GetNumAVDocs() <= 0:
-        app.Hide()
+    fileexists = os.path.isfile(pdf_src) and avdoc.Open(pdf_src, pdf_src)
+    if fileexists:
+        (page, zoomtype, zoom, frame, viewmode) = getAVStatus(avdoc)
+        avdoc.Close(-1)
+        if app.GetNumAVDocs() <= 0:
+            app.Hide()
 
     # make
-    callMake(texfile, project, working_dir, output_dir, CD, LATEX)
+    callMake(texfile, project, working_dir, output_dir, LATEX)
 
     # open pdf
-    if not avdoc.Open(pdf_src, pdf_src):
+    if ((not os.path.isfile(pdf_src)) or (not avdoc.Open(pdf_src, pdf_src))):
         print('cannot open pdf, bye.')
-        sys.exit(0)
-    avdoc.SetFrame(frame)
+        sys.exit(-1)
+
+    # set page view
+    if fileexists:
+        avdoc.SetFrame(frame)
+        avdoc.SetViewMode(viewmode)
+        pddoc = avdoc.GetPDDoc()
+        numPages = pddoc.GetNumPages()
+        page = min(page, numPages)
+
+        pageview = avdoc.GetAVPageView()
+        pageview.Goto(page)
+        pageview.ZoomTo(zoomtype, zoom)
     app.Show()
-
-    pddoc = avdoc.GetPDDoc()
-    numPages = pddoc.GetNumPages()
-    page = min(page, numPages)
-
-    pageview = avdoc.GetAVPageView()
-    pageview.Goto(page)
-    pageview.ZoomTo(zoomtype, zoom)
     
     app.Exit()
