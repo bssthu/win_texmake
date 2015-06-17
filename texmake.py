@@ -42,11 +42,17 @@ def loadSetting(filename):
     return (texfile, project, working_dir, output_dir)
 
 
-def getPageAndZoom(avdoc):
+def callMake(texfile, project, working_dir, output_dir):
+    pass
+
+
+def getAVStatus(avdoc):
     pageview = avdoc.GetAVPageView()
     page = pageview.GetPageNum()
+    zoomtype = pageview.GetZoomType()
     zoom = pageview.GetZoom()
-    return (page, zoom)
+    frame = avdoc.GetFrame()
+    return (page, zoomtype, zoom, frame)
 
 
 if __name__ == '__main__':
@@ -62,14 +68,20 @@ if __name__ == '__main__':
     if not avdoc.Open(pdf_src, pdf_src):
         print('cannot open pdf, bye.')
         sys.exit(0)
-    (page, zoom) = getPageAndZoom(avdoc)
+    (page, zoomtype, zoom, frame) = getAVStatus(avdoc)
     avdoc.Close(-1)
+    if app.GetNumAVDocs() <= 0:
+        app.Hide()
+
+    # make
+    callMake(texfile, project, working_dir, output_dir)
 
     # open pdf
     if not avdoc.Open(pdf_src, pdf_src):
         print('cannot open pdf, bye.')
         sys.exit(0)
-    app.Show();
+    avdoc.SetFrame(frame)
+    app.Show()
 
     pddoc = avdoc.GetPDDoc()
     numPages = pddoc.GetNumPages()
@@ -77,3 +89,6 @@ if __name__ == '__main__':
 
     pageview = avdoc.GetAVPageView()
     pageview.Goto(page)
+    pageview.ZoomTo(zoomtype, zoom)
+    
+    app.Exit()
