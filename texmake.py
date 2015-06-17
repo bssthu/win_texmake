@@ -22,6 +22,9 @@ def loadSetting(filename):
     working_dir = cf.get('tex', 'working_dir')
     output_dir = cf.get('tex', 'output_dir')
     
+    CD = cf.get('cmd', 'CD')
+    LATEX = cf.get('cmd', 'LATEX')
+    
     if (working_dir == None or working_dir == ''):
         working_dir = '.'
     if (texfile == None or texfile == ''):
@@ -39,11 +42,12 @@ def loadSetting(filename):
     if (output_dir == None or output_dir == ''):
         output_dir = '.'
 
-    return (texfile, project, working_dir, output_dir)
+    return (texfile, project, working_dir, output_dir, CD, LATEX)
 
 
-def callMake(texfile, project, working_dir, output_dir):
-    pass
+def callMake(texfile, project, working_dir, output_dir, CD, LATEX):
+    os.system('%s %s && %s %s -output-directory=%s -halt-on-error'
+            % (CD, working_dir, LATEX, texfile, output_dir))
 
 
 def getAVStatus(avdoc):
@@ -57,7 +61,7 @@ def getAVStatus(avdoc):
 
 if __name__ == '__main__':
     # init
-    (texfile, project, working_dir, output_dir) = loadSetting('texmake.ini')
+    (texfile, project, working_dir, output_dir, CD, LATEX) = loadSetting('texmake.ini')
     pdf_src = os.path.abspath('%s%s%s.pdf' % (output_dir, os.sep, project))
     pdf_src = os.path.abspath(pdf_src)
 
@@ -74,7 +78,7 @@ if __name__ == '__main__':
         app.Hide()
 
     # make
-    callMake(texfile, project, working_dir, output_dir)
+    callMake(texfile, project, working_dir, output_dir, CD, LATEX)
 
     # open pdf
     if not avdoc.Open(pdf_src, pdf_src):
