@@ -72,8 +72,8 @@ if __name__ == '__main__':
     if fileexists:
         (page, zoomtype, zoom, frame, viewmode) = getAVStatus(avdoc)
         avdoc.Close(-1)
-        if app.GetNumAVDocs() <= 0:
-            app.Hide()
+    if app.GetNumAVDocs() <= 0:
+        app.Hide()
 
     # make
     callMake(texfile, project, working_dir, output_dir, LATEX)
