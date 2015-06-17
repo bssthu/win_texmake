@@ -20,9 +20,9 @@ def loadSetting(filename):
     texfile = cf.get('tex', 'texfile')
     working_dir = cf.get('tex', 'working_dir')
     output_dir = cf.get('tex', 'output_dir')
-    
+
     LATEX = cf.get('cmd', 'LATEX')
-    
+
     if (working_dir == None or working_dir == ''):
         working_dir = '.'
     if (texfile == None or texfile == ''):
@@ -95,5 +95,5 @@ if __name__ == '__main__':
         pageview.Goto(page)
         pageview.ZoomTo(zoomtype, zoom)
     app.Show()
-    
+
     app.Exit()
