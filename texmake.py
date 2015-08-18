@@ -11,11 +11,14 @@ import sys
 import os
 import getopt
 from win32com.client.dynamic import Dispatch
-import ConfigParser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 
 def loadSetting(filename):
-    cf = ConfigParser.ConfigParser()
+    cf = configparser.ConfigParser()
     cf.read(filename)
 
     texfile = cf.get('tex', 'texfile')
@@ -46,7 +49,7 @@ def getOpts(argv):
     output_dir = ''
     try:
         opts, argv = getopt.getopt(argv[1:], '', ['output_dir='])
-    except Exception, e:
+    except (Exception, e):
         print('unexcepted error when parse argv: %s' % e)
         return output_dir
 
