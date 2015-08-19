@@ -17,7 +17,7 @@ all:
 
 output_dir_set:
 OUTPUT_DIR =
-ifneq "$(strip $(output_dir))" ""
-OUTPUT_DIR = --output_dir=$(output_dir)
+ifneq "$(strip $(output-directory))" ""
+OUTPUT_DIR = --output-directory=$(output-directory)
 endif
 FLGS += $(OUTPUT_DIR)

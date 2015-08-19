@@ -22,8 +22,8 @@ def loadSetting(filename):
     cf.read(filename)
 
     texfile = cf.get('tex', 'texfile')
-    working_dir = cf.get('tex', 'working_dir')
-    output_dir = cf.get('tex', 'output_dir')
+    working_dir = cf.get('tex', 'working_directory')
+    output_dir = cf.get('tex', 'output_directory')
 
     LATEX = cf.get('cmd', 'LATEX')
 
@@ -48,13 +48,13 @@ def loadSetting(filename):
 def getOpts(argv):
     output_dir = ''
     try:
-        opts, argv = getopt.getopt(argv[1:], '', ['output_dir='])
+        opts, argv = getopt.getopt(argv[1:], '', ['output-directory='])
     except (Exception, e):
         print('unexcepted error when parse argv: %s' % e)
         return output_dir
 
     for o, a in opts:
-        if o in ('--output_dir'):
+        if o in ('--output-directory'):
             output_dir = a
 
     return output_dir

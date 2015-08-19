@@ -7,7 +7,7 @@ Compile tex to pdf, open with acrobat reader
 - 重新打开生成的 pdf
 - 回到关闭前的状态
 
-## Usaga
+## Usage
 - Edit texmake.ini
 - Run command
 ```bash
@@ -21,20 +21,20 @@ python texmake.py
 #### simple way
 - Just copy texmake.ini, texmake.py, Makefile to working directory.
 Then run command.
-- See https://github.com/bssthu/win_texmake/releases/download/v1.0/demo_simple.zip
+- See https://github.com/bssthu/win_texmake/releases/latest , download demo_simple.zip
 
 #### more complex way
-- See https://github.com/bssthu/win_texmake/releases/download/v1.0/demo_shadow.zip
+- See https://github.com/bssthu/win_texmake/releases/latest , download demo_shadow.zip
 
 #### change output directory
-- Change output_dir in texmake.ini
+- Change output_directory in texmake.ini
 - Or run command
 ```bash
-make output_dir=../build
+make output-directory=../build
 ```
 - Or run command
 ```bash
-python --output_dir=../build
+python --output-directory=../build
 ```
 
 ## License
