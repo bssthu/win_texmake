@@ -62,7 +62,7 @@ def getOpts(argv):
 
 def callMake(texfile, project, working_dir, output_dir, LATEX):
     os.chdir(working_dir)
-    cmd = '%s %s -output-directory=%s -halt-on-error' % (LATEX, texfile, output_dir)
+    cmd = '%s -file-line-error -output-directory=%s -halt-on-error %s' % (LATEX, output_dir, texfile)
     os.system(cmd)
 
 
