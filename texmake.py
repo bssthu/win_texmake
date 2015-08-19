@@ -63,7 +63,7 @@ def getOpts(argv):
 def callMake(texfile, project, working_dir, output_dir, LATEX):
     os.chdir(working_dir)
     cmd = '%s -file-line-error -output-directory=%s -halt-on-error %s' % (LATEX, output_dir, texfile)
-    os.system(cmd)
+    return os.system(cmd)
 
 
 def getAVStatus(avdoc):
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     # init
     (texfile, working_dir, output_dir, LATEX) = loadSetting('texmake.ini')
     output_dir_opt = getOpts(sys.argv)
-    
+
     if output_dir_opt != '':
         output_dir = output_dir_opt
     project = texfile.split('.tex')[0]
@@ -99,7 +99,9 @@ if __name__ == '__main__':
         app.Hide()
 
     # make
-    callMake(texfile, project, working_dir, output_dir, LATEX)
+    code = callMake(texfile, project, working_dir, output_dir, LATEX)
+    if code != 0:
+        sys.exit(code)
 
     # open pdf
     if ((not os.path.isfile(pdf_src)) or (not avdoc.Open(pdf_src, pdf_src))):
