@@ -3,7 +3,6 @@
 # Project: texmake
 # created by bss at 2015-06-17
 
-PYTHON = python
 CD = cd
 FLGS =
 
@@ -11,7 +10,7 @@ FLGS =
 .PHONY:all
 
 all:
-	$(PYTHON) texmake.py $(FLGS)
+	./texmake.py $(FLGS)
 
 .PHONY:output_dir_set
 
