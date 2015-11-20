@@ -63,6 +63,7 @@ __MACOSX
 ._
 
 *.tex
+*.bib
 *.fmt
 *.aux
 *.log

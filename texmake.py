@@ -22,10 +22,12 @@ def loadSetting(filename):
     cf.read(filename)
 
     texfile = cf.get('tex', 'texfile')
+    bibfile = cf.get('tex', 'bibfile')
     working_dir = cf.get('tex', 'working_directory')
     output_dir = cf.get('tex', 'output_directory')
 
     LATEX = cf.get('cmd', 'LATEX')
+    BIBTEX = cf.get('cmd', 'BIBTEX')
 
     if (working_dir == None or working_dir == ''):
         working_dir = '.'
@@ -39,16 +41,26 @@ def loadSetting(filename):
         else:
             print('cannot decide texfile, please edit texmake.ini')
             sys.exit(-1)
+    if (bibfile == None or bibfile == ''):
+        bibfiles = []
+        for file in os.listdir(working_dir):
+            if file.endswith('.bib'):
+                bibfiles.append(file)
+        if len(bibfiles) == 1:
+            bibfile = bibfiles[0]
+        else:
+            bibfile = ''    # ignore
     if (output_dir == None or output_dir == ''):
         output_dir = '.'
 
-    return (texfile, working_dir, output_dir, LATEX)
+    return (texfile, bibfile, working_dir, output_dir, LATEX, BIBTEX)
 
 
 def getOpts(argv):
     output_dir = ''
+    bib = False
     try:
-        opts, argv = getopt.getopt(argv[1:], '', ['output-directory='])
+        opts, argv = getopt.getopt(argv[1:], '', ['output-directory=','bib'])
     except (Exception, e):
         print('unexcepted error when parse argv: %s' % e)
         return output_dir
@@ -56,14 +68,44 @@ def getOpts(argv):
     for o, a in opts:
         if o in ('--output-directory'):
             output_dir = a
+        if o in ('--bib'):
+            bib = True
 
-    return output_dir
+    return (output_dir, bib)
 
 
-def callMake(texfile, project, working_dir, output_dir, LATEX):
+def callMake(texfile, bibfile, project, working_dir, output_dir, bib, LATEX, BIBTEX):
+    working_dir = os.path.abspath(working_dir)
     os.chdir(working_dir)
-    cmd = '%s -file-line-error -output-directory=%s -halt-on-error %s' % (LATEX, output_dir, texfile)
-    return os.system(cmd)
+    if bib and bibfile != '':
+        cmd = 'cp %s %s%s%s' % (bibfile, output_dir, os.sep, bibfile)
+        os.system(cmd)
+
+    # make first pass
+    cmd_tex = '%s -file-line-error -output-directory=%s -halt-on-error %s' % (LATEX, output_dir, texfile)
+    code = os.system(cmd_tex)
+    if code != 0:
+        return code
+
+    if bib and bibfile != '':
+        # if bib, make bib
+        os.chdir(output_dir)
+        cmd_bib = '%s %s' % (BIBTEX, bibfile[:-4])
+        code = os.system(cmd_bib)
+        if code != 0:
+            return code
+
+        os.chdir(working_dir)
+        # if bib, make second pass
+        code = os.system(cmd_tex)
+        if code != 0:
+            return code
+        # if bib, make third pass
+        code = os.system(cmd_tex)
+        if code != 0:
+            return code
+
+    return code
 
 
 def getAVStatus(avdoc):
@@ -78,8 +120,8 @@ def getAVStatus(avdoc):
 
 if __name__ == '__main__':
     # init
-    (texfile, working_dir, output_dir, LATEX) = loadSetting('texmake.ini')
-    output_dir_opt = getOpts(sys.argv)
+    (texfile, bibfile, working_dir, output_dir, LATEX, BIBTEX) = loadSetting('texmake.ini')
+    (output_dir_opt, bib_opt) = getOpts(sys.argv)
 
     if output_dir_opt != '':
         output_dir = output_dir_opt
@@ -99,7 +141,7 @@ if __name__ == '__main__':
         app.Hide()
 
     # make
-    code = callMake(texfile, project, working_dir, output_dir, LATEX)
+    code = callMake(texfile, bibfile, project, working_dir, output_dir, bib_opt, LATEX, BIBTEX)
     if code != 0:
         sys.exit(code)
 

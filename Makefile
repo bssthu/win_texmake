@@ -13,6 +13,11 @@ FLGS =
 all:
 	$(PYTHON) texmake.py $(FLGS)
 
+.PHONY:bib
+
+bib:
+	$(PYTHON) texmake.py $(FLGS) --bib
+
 .PHONY:output_dir_set
 
 output_dir_set:
