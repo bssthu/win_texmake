@@ -37,5 +37,10 @@ make output-directory=../build
 python --output-directory=../build
 ```
 
+#### use bibtex
+```bash
+make bib
+```
+
 ## License
 GPLv3
