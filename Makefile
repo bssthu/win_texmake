@@ -15,7 +15,7 @@ all:
 .PHONY:bib
 
 bib:
-	$(PYTHON) texmake.py $(FLGS) --bib
+	./texmake.py $(FLGS) --bib
 
 .PHONY:output_dir_set
 
